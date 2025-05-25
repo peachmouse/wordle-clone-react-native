@@ -62,7 +62,15 @@ const SubscribeModal = forwardRef<Ref>((props, ref) => {
         </View>
         <BottomSheetScrollView>
           <Text style={styles.containerHeadline}>Unlimited Play.{'\n'}Try free for 7 days.</Text>
-          <Image source={require('@/assets/images/games.png')} style={styles.image} />
+          
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('@/assets/images/babbel_logo.png')} 
+              style={styles.image}
+              resizeMode="contain"
+            />
+            <Text style={styles.logoText}>word puzzles!</Text>
+          </View>
 
           <View style={{ marginVertical: 20 }}>
             <MarkedList
@@ -114,9 +122,9 @@ const styles = StyleSheet.create({
     fontFamily: 'FrankRuhlLibre_900Black',
   },
   image: {
-    width: '90%',
-    alignSelf: 'center',
+    width: 100,
     height: 40,
+    alignSelf: 'center',
   },
   modalBtns: {
     flexDirection: 'row',
@@ -163,6 +171,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#484848',
     paddingTop: 10,
+  },
+  logoContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  logoText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#484848',
+    marginTop: 8,
+    fontFamily: 'FrankRuhlLibre_500Medium',
   },
 });
 

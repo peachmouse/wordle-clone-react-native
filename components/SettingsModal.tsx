@@ -4,19 +4,18 @@ import { BottomSheetBackdrop, BottomSheetModal, useBottomSheetModal } from '@gor
 import { Ionicons } from '@expo/vector-icons';
 export type Ref = BottomSheetModal;
 import { Colors } from '@/constants/Colors';
-import { useMMKVBoolean } from 'react-native-mmkv';
-import { storage } from '@/utils/storage';
+import { useAsyncStorageBoolean } from '@/utils/storage';
 
 const SettingsModal = forwardRef<Ref>((props, ref) => {
   const snapPoints = useMemo(() => ['50%'], []);
   const { dismiss } = useBottomSheetModal();
-  const [dark, setDark] = useMMKVBoolean('dark-mode', storage);
-  const [hard, setHard] = useMMKVBoolean('hard-mode', storage);
-  const [contrast, setContrast] = useMMKVBoolean('contrast-mode', storage);
+  const [dark, setDark] = useAsyncStorageBoolean('dark-mode', false);
+  const [hard, setHard] = useAsyncStorageBoolean('hard-mode', false);
+  const [contrast, setContrast] = useAsyncStorageBoolean('contrast-mode', false);
 
-  const toggleDark = () => setDark((prev) => !!!prev);
-  const toggleHard = () => setHard((prev) => !!!prev);
-  const toggleContrast = () => setContrast((prev) => !!!prev);
+  const toggleDark = () => setDark(!dark);
+  const toggleHard = () => setHard(!hard);
+  const toggleContrast = () => setContrast(!contrast);
 
   const renderBackdrop = useCallback(
     (props: any) => (

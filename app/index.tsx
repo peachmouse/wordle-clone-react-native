@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   useColorScheme,
   useWindowDimensions,
+  Image,
 } from 'react-native';
 import Icon from '@/assets/images/wordle-icon.svg';
 import { format } from 'date-fns';
@@ -14,7 +15,6 @@ import { Link } from 'expo-router';
 import SubscribeModal from '@/components/SubscribeModal';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useRef } from 'react';
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import Animated, { FadeIn, FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
@@ -25,7 +25,6 @@ export default function Index() {
   const textColor = Colors[colorScheme ?? 'light'].text;
   const subscribeModalRef = useRef<BottomSheetModal>(null);
   const { width } = useWindowDimensions();
-  const { signOut } = useAuth();
 
   const handlePresentSubscribeModalPress = () => subscribeModalRef.current?.present();
 
@@ -33,7 +32,15 @@ export default function Index() {
     <Animated.View style={[styles.container, { backgroundColor }]}>
       <SubscribeModal ref={subscribeModalRef} />
 
-      <Animated.View style={styles.header} entering={FadeInDown}>
+      <Animated.View style={styles.logoContainer} entering={FadeInDown.delay(100)}>
+        <Image 
+          source={require('@/assets/images/babbel_logo.png')} 
+          style={styles.babbelLogo}
+          resizeMode="contain"
+        />
+      </Animated.View>
+
+      <Animated.View style={styles.header} entering={FadeInDown.delay(200)}>
         <Icon width={100} height={70} />
         <ThemedText style={styles.title}>Wordle</ThemedText>
         <ThemedText style={styles.text}>Get 6 chances to guess a 5-letter word.</ThemedText>
@@ -49,22 +56,11 @@ export default function Index() {
           </AnimatedTouchableOpacity>
         </Link>
 
-        <SignedOut>
-          <Link href={'/login'} style={[styles.btn, { borderColor: textColor }]} asChild>
-            <AnimatedTouchableOpacity entering={FadeInLeft.delay(100)}>
-              <ThemedText style={styles.btnText}>Log in</ThemedText>
-            </AnimatedTouchableOpacity>
-          </Link>
-        </SignedOut>
-
-        <SignedIn>
-          <AnimatedTouchableOpacity
-            onPress={() => signOut()}
-            entering={FadeInLeft.delay(100)}
-            style={[styles.btn, { borderColor: textColor }]}>
-            <ThemedText style={styles.btnText}>Sign out</ThemedText>
+        <Link href={'/login'} style={[styles.btn, { borderColor: textColor }]} asChild>
+          <AnimatedTouchableOpacity entering={FadeInLeft.delay(100)}>
+            <ThemedText style={styles.btnText}>Log in</ThemedText>
           </AnimatedTouchableOpacity>
-        </SignedIn>
+        </Link>
 
         <AnimatedTouchableOpacity
           style={[styles.btn, { borderColor: textColor }]}
@@ -77,7 +73,7 @@ export default function Index() {
       <Animated.View style={styles.footer} entering={FadeIn.delay(300)}>
         <ThemedText style={styles.footerDate}>{format(new Date(), 'MMMM d, yyyy')}</ThemedText>
         <ThemedText style={styles.footerText}>No. 1151</ThemedText>
-        <ThemedText style={styles.footerText}>Edited by Simon Grimm</ThemedText>
+        <ThemedText style={styles.footerText}>Edited by Todd & Mickael</ThemedText>
       </Animated.View>
     </Animated.View>
   );
@@ -89,6 +85,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 40,
     paddingHorizontal: 50,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  babbelLogo: {
+    width: 120,
+    height: 40,
   },
   header: {
     alignItems: 'center',

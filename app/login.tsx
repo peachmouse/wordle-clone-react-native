@@ -1,42 +1,25 @@
-import { useOAuth } from '@clerk/clerk-expo';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useState } from 'react';
 import { defaultStyles } from '@/constants/Styles';
 
-enum Strategy {
-  Google = 'oauth_google',
-  Apple = 'oauth_apple',
-  Facebook = 'oauth_facebook',
-}
-
 const Page = () => {
   const router = useRouter();
-
   const [email, setEmail] = useState('');
-  const { startOAuthFlow: googleAuth } = useOAuth({ strategy: 'oauth_google' });
-  const { startOAuthFlow: facebookAuth } = useOAuth({ strategy: 'oauth_facebook' });
-  const { startOAuthFlow: appleAuth } = useOAuth({ strategy: 'oauth_apple' });
 
-  const onSelectAuth = async (strategy: Strategy) => {
-    const selectedAuth = {
-      [Strategy.Google]: googleAuth,
-      [Strategy.Apple]: appleAuth,
-      [Strategy.Facebook]: facebookAuth,
-    }[strategy];
-
-    try {
-      const { createdSessionId, setActive } = await selectedAuth();
-
-      if (createdSessionId) {
-        setActive!({ session: createdSessionId });
-        router.back();
-      }
-    } catch (err) {
-      console.error('OAuth error', err);
+  const handleEmailLogin = () => {
+    if (email) {
+      Alert.alert('Login', 'Email login functionality will be implemented later.');
+      router.back();
+    } else {
+      Alert.alert('Error', 'Please enter an email address.');
     }
+  };
+
+  const handleSocialLogin = (provider: string) => {
+    Alert.alert('Login', `${provider} login functionality will be implemented later.`);
   };
 
   return (
@@ -49,7 +32,7 @@ const Page = () => {
       <Text style={styles.inputLabel}>Email address</Text>
       <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
 
-      <TouchableOpacity style={defaultStyles.btn}>
+      <TouchableOpacity style={defaultStyles.btn} onPress={handleEmailLogin}>
         <Text style={defaultStyles.btnText}>Continue with email</Text>
       </TouchableOpacity>
 
@@ -72,17 +55,17 @@ const Page = () => {
       </View>
 
       <View style={{ gap: 20 }}>
-        <TouchableOpacity style={styles.btnOutline} onPress={() => onSelectAuth(Strategy.Google)}>
+        <TouchableOpacity style={styles.btnOutline} onPress={() => handleSocialLogin('Google')}>
           <Ionicons name="logo-google" size={24} style={styles.btnIcon} />
           <Text style={styles.btnOutlineText}>Continue with Google</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline} onPress={() => onSelectAuth(Strategy.Facebook)}>
+        <TouchableOpacity style={styles.btnOutline} onPress={() => handleSocialLogin('Facebook')}>
           <Ionicons name="logo-facebook" size={24} style={styles.btnIcon} />
           <Text style={styles.btnOutlineText}>Continue with Facebook</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline} onPress={() => onSelectAuth(Strategy.Apple)}>
+        <TouchableOpacity style={styles.btnOutline} onPress={() => handleSocialLogin('Apple')}>
           <Ionicons name="logo-apple" size={24} style={styles.btnIcon} />
           <Text style={styles.btnOutlineText}>Continue with Apple</Text>
         </TouchableOpacity>
@@ -90,7 +73,9 @@ const Page = () => {
     </ScrollView>
   );
 };
+
 export default Page;
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',

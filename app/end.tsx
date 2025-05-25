@@ -4,10 +4,6 @@ import Icon from '@/assets/images/wordle-icon.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import * as MailComposer from 'expo-mail-composer';
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
-import { useEffect, useState } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { FIRESTORE_DB } from '@/utils/FirebaseConfig';
 
 const Page = () => {
   const { win, word, gameField } = useLocalSearchParams<{
@@ -16,39 +12,6 @@ const Page = () => {
     gameField?: string;
   }>();
   const router = useRouter();
-  const { user } = useUser();
-  const [userScore, setUserScore] = useState<any>(null);
-
-  useEffect(() => {
-    updateHighscore();
-  }, [user]);
-
-  const updateHighscore = async () => {
-    if (!user) return;
-
-    const docRef = doc(FIRESTORE_DB, `highscore/${user.id}`);
-    const userScore = await getDoc(docRef);
-
-    let newScore = {
-      played: 1,
-      wins: win === 'true' ? 1 : 0,
-      lastGame: win === 'true' ? 'win' : 'loss',
-      currentStreak: win === 'true' ? 1 : 0,
-    };
-
-    if (userScore.exists()) {
-      const data = userScore.data();
-
-      newScore = {
-        played: data.played + 1,
-        wins: win === 'true' ? data.wins + 1 : data.wins,
-        lastGame: win === 'true' ? 'win' : 'loss',
-        currentStreak: win === 'true' && data.lastGame === 'win' ? data.currentStreak + 1 : 0,
-      };
-    }
-    await setDoc(docRef, newScore);
-    setUserScore(newScore);
-  };
 
   const shareGame = () => {
     const game = JSON.parse(gameField!);
@@ -139,39 +102,20 @@ const Page = () => {
         <Text style={styles.title}>
           {win === 'true' ? 'Congratulations!' : 'Thanks for playing today!'}
         </Text>
-        <SignedOut>
-          <Text style={styles.text}>Want to see your stats and streaks?</Text>
+        
+        <Text style={styles.text}>Want to see your stats and streaks?</Text>
 
-          <Link href={'/login'} style={styles.btn} asChild>
-            <TouchableOpacity>
-              <Text style={styles.btnText}>Create a free account</Text>
-            </TouchableOpacity>
-          </Link>
+        <Link href={'/login'} style={styles.btn} asChild>
+          <TouchableOpacity>
+            <Text style={styles.btnText}>Create a free account</Text>
+          </TouchableOpacity>
+        </Link>
 
-          <Link href={'/login'} asChild>
-            <TouchableOpacity>
-              <Text style={styles.textLink}>Already Registered? Log In</Text>
-            </TouchableOpacity>
-          </Link>
-        </SignedOut>
-
-        <SignedIn>
-          <Text style={styles.text}>Statistics</Text>
-          <View style={styles.stats}>
-            <View>
-              <Text style={styles.score}>{userScore?.played}</Text>
-              <Text>Played</Text>
-            </View>
-            <View>
-              <Text style={styles.score}>{userScore?.wins}</Text>
-              <Text>Wins</Text>
-            </View>
-            <View>
-              <Text style={styles.score}>{userScore?.currentStreak}</Text>
-              <Text>Current Streak</Text>
-            </View>
-          </View>
-        </SignedIn>
+        <Link href={'/login'} asChild>
+          <TouchableOpacity>
+            <Text style={styles.textLink}>Already Registered? Log In</Text>
+          </TouchableOpacity>
+        </Link>
 
         <View
           style={{
@@ -189,7 +133,9 @@ const Page = () => {
     </View>
   );
 };
+
 export default Page;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -239,16 +185,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.green,
     borderRadius: 30,
     width: '70%',
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: '100%',
-    gap: 10,
-  },
-  score: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20,
   },
 });
